@@ -6,7 +6,7 @@
     ":dependencyDashboard",
     ":semanticCommits"
   ],
-  "timezone": "Europe/Paris",
+  "timezone": "Europe/London",
   "prConcurrentLimit": 0,
   "prHourlyLimit": 0,
 
