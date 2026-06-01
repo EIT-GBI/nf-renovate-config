@@ -22,7 +22,7 @@
         "/(^|/)\\.gitmodules$/"
       ],
       "matchStrings": [
-        "url\\s*=\\s*https://github\\.com/(?<depName>YOUR_ORG/nf-mod-[^#\\s]+?)(?:\\.git)?#(?<currentValue>v?\\d+\\.\\d+\\.\\d+)\\s"
+        "url\\s*=\\s*https://github\\.com/(?<depName>EIT-GBI/nf-mod-[^#\\s]+?)(?:\\.git)?#(?<currentValue>v?\\d+\\.\\d+\\.\\d+)\\s"
       ],
       "datasourceTemplate": "github-releases",
       "versioningTemplate": "semver",
