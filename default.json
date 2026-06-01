@@ -17,12 +17,12 @@
   "customManagers": [
     {
       "customType": "regex",
-      "description": "Track nf-mod-* git submodules by tag, not by branch HEAD. Requires the .gitmodules entry to use `url = <repo>#<tag>` syntax (see Gaige pattern).",
+      "description": "Track nf-mod-* versions declared in modules.versions. Each line: nf-mod-<name>=v<MAJOR>.<MINOR>.<PATCH>",
       "managerFilePatterns": [
-        "/(^|/)\\.gitmodules$/"
+        "/(^|/)modules\\.versions$/"
       ],
       "matchStrings": [
-        "url\\s*=\\s*https://github\\.com/(?<depName>EIT-GBI/nf-mod-[^#\\s]+?)(?:\\.git)?#(?<currentValue>v?\\d+\\.\\d+\\.\\d+)\\s"
+        "(?<depName>nf-mod-[a-zA-Z0-9._-]+)=(?<currentValue>v?\\d+\\.\\d+\\.\\d+)\\s*$"
       ],
       "datasourceTemplate": "github-releases",
       "versioningTemplate": "semver",
