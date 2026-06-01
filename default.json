@@ -1,0 +1,63 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "description": "Shared Renovate preset for nf-* pipelines and nf-sub-* subworkflows. Drives semver-aware propagation of nf-mod-* git-submodule updates.",
+  "extends": [
+    "config:recommended",
+    ":dependencyDashboard",
+    ":semanticCommits"
+  ],
+  "timezone": "Europe/Paris",
+  "prConcurrentLimit": 0,
+  "prHourlyLimit": 0,
+
+  "git-submodules": {
+    "enabled": false
+  },
+
+  "customManagers": [
+    {
+      "customType": "regex",
+      "description": "Track nf-mod-* git submodules by tag, not by branch HEAD. Requires the .gitmodules entry to use `url = <repo>#<tag>` syntax (see Gaige pattern).",
+      "managerFilePatterns": [
+        "/(^|/)\\.gitmodules$/"
+      ],
+      "matchStrings": [
+        "url\\s*=\\s*https://github\\.com/(?<depName>YOUR_ORG/nf-mod-[^#\\s]+?)(?:\\.git)?#(?<currentValue>v?\\d+\\.\\d+\\.\\d+)\\s"
+      ],
+      "datasourceTemplate": "github-releases",
+      "versioningTemplate": "semver",
+      "depTypeTemplate": "nf-module",
+      "extractVersionTemplate": "^v?(?<version>\\d+\\.\\d+\\.\\d+)$"
+    }
+  ],
+
+  "packageRules": [
+    {
+      "description": "PATCH bumps of nf-mod-* submodules: no propagation. Disabled entirely.",
+      "matchDepTypes": ["nf-module"],
+      "matchUpdateTypes": ["patch"],
+      "enabled": false
+    },
+    {
+      "description": "MINOR bumps of nf-mod-* submodules: auto-PR, group, and automerge. The consumer repo's release workflow should then bump its own MINOR.",
+      "matchDepTypes": ["nf-module"],
+      "matchUpdateTypes": ["minor"],
+      "enabled": true,
+      "automerge": true,
+      "automergeType": "pr",
+      "groupName": "nf-mod minor updates",
+      "commitMessagePrefix": "feat(deps):",
+      "semanticCommitType": "feat",
+      "labels": ["dependencies", "nf-module", "minor-bump"]
+    },
+    {
+      "description": "MAJOR bumps of nf-mod-* submodules: no automatic propagation. The module repo's release workflow opens a tracking issue here instead.",
+      "matchDepTypes": ["nf-module"],
+      "matchUpdateTypes": ["major"],
+      "enabled": false
+    }
+  ],
+
+  "separateMinorPatch": true,
+  "separateMajorMinor": true
+}
