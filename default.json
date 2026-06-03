@@ -1,6 +1,6 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "description": "Shared Renovate preset for nf-* pipelines and nf-sub-* subworkflows. Drives semver-aware propagation of nf-mod-* git-submodule updates.",
+  "description": "Shared Renovate preset for nf-* pipelines and nf-sub-* subworkflows. Tracks nf-mod-* versions via the modules.versions file at the repo root, with semver-aware propagation rules.",
   "extends": [
     "config:recommended",
     ":dependencyDashboard",
@@ -22,9 +22,11 @@
         "/(^|/)modules\\.versions$/"
       ],
       "matchStrings": [
-        "(?<depName>nf-mod-[a-zA-Z0-9._-]+)=(?<currentValue>v?\\d+\\.\\d+\\.\\d+)\\s*$"
+        "(?<packageName>nf-mod-[a-zA-Z0-9._-]+)=(?<currentValue>v?\\d+\\.\\d+\\.\\d+)\\s*$"
       ],
       "datasourceTemplate": "github-tags",
+      "depNameTemplate": "EIT-GBI/{{{packageName}}}",
+      "packageNameTemplate": "EIT-GBI/{{{packageName}}}",
       "versioningTemplate": "semver",
       "depTypeTemplate": "nf-module",
       "extractVersionTemplate": "^v?(?<version>\\d+\\.\\d+\\.\\d+)$"
@@ -39,7 +41,7 @@
       "enabled": false
     },
     {
-      "description": "MINOR bumps of nf-mod-* submodules: auto-PR, group, and automerge. The consumer repo's release workflow should then bump its own MINOR.",
+      "description": "MINOR bumps of nf-mod-* submodules: auto-PR, group, and automerge. The post-merge sync workflow updates the submodule pointer; the auto-release workflow bumps this repo's MINOR.",
       "matchDepTypes": ["nf-module"],
       "matchUpdateTypes": ["minor"],
       "enabled": true,
@@ -48,7 +50,7 @@
       "groupName": "nf-mod minor updates",
       "commitMessagePrefix": "feat(deps):",
       "semanticCommitType": "feat",
-      "labels": ["dependencies", "nf-module", "minor-bump"]
+      "labels": ["dependencies", "nf-module", "bump:minor"]
     },
     {
       "description": "MAJOR bumps of nf-mod-* submodules: no automatic propagation. The module repo's release workflow opens a tracking issue here instead.",
