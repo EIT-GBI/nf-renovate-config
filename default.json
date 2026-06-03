@@ -24,7 +24,7 @@
       "matchStrings": [
         "(?<packageName>nf-mod-[a-zA-Z0-9._-]+)=(?<currentValue>v?\\d+\\.\\d+\\.\\d+)\\s*$"
       ],
-      "datasourceTemplate": "github-tags",
+      "datasourceTemplate": "github-releases",
       "depNameTemplate": "EIT-GBI/{{{packageName}}}",
       "packageNameTemplate": "EIT-GBI/{{{packageName}}}",
       "versioningTemplate": "semver",
