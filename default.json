@@ -1,6 +1,6 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "description": "Shared Renovate preset for nf-* pipelines and nf-sub-* subworkflows. Tracks nf-mod-* versions via the modules.versions file at the repo root, with semver-aware propagation rules.",
+  "description": "Shared Renovate preset for nf-* pipelines and nf-sub-* subworkflows. Tracks nf-mod-* and nf-sub-* versions via the modules.versions file at the repo root, with semver-aware propagation rules.",
   "extends": [
     "config:recommended",
     ":dependencyDashboard",
@@ -17,12 +17,12 @@
   "customManagers": [
     {
       "customType": "regex",
-      "description": "Track nf-mod-* versions declared in modules.versions. Each line: nf-mod-<name>=v<MAJOR>.<MINOR>.<PATCH>",
+      "description": "Track nf-mod-* and nf-sub-* versions declared in modules.versions. Each line: nf-mod-<name>=v<MAJOR>.<MINOR>.<PATCH> or nf-sub-<name>=... A subworkflow is pinned and propagated exactly like a module.",
       "managerFilePatterns": [
         "/(^|/)modules\\.versions$/"
       ],
       "matchStrings": [
-        "(?<packageName>nf-mod-[a-zA-Z0-9._-]+)=(?<currentValue>v?\\d+\\.\\d+\\.\\d+)\\s*$"
+        "(?<packageName>nf-(?:mod|sub)-[a-zA-Z0-9._-]+)=(?<currentValue>v?\\d+\\.\\d+\\.\\d+)\\s*$"
       ],
       "datasourceTemplate": "github-releases",
       "depNameTemplate": "EIT-GBI/{{{packageName}}}",
@@ -35,13 +35,13 @@
 
   "packageRules": [
     {
-      "description": "PATCH bumps of nf-mod-* submodules: no propagation. Disabled entirely.",
+      "description": "PATCH bumps of nf-mod-*/nf-sub-* submodules: no propagation. Disabled entirely.",
       "matchDepTypes": ["nf-module"],
       "matchUpdateTypes": ["patch"],
       "enabled": false
     },
     {
-      "description": "MINOR bumps of nf-mod-* submodules: auto-PR, group, and automerge. The post-merge sync workflow updates the submodule pointer; the auto-release workflow bumps this repo's MINOR.",
+      "description": "MINOR bumps of nf-mod-*/nf-sub-* submodules: auto-PR, group, and automerge. The post-merge sync workflow updates the submodule pointer; the auto-release workflow bumps this repo's MINOR.",
       "matchDepTypes": ["nf-module"],
       "matchUpdateTypes": ["minor"],
       "enabled": true,
@@ -53,7 +53,7 @@
       "labels": ["dependencies", "nf-module", "bump:minor"]
     },
     {
-      "description": "MAJOR bumps of nf-mod-* submodules: no automatic propagation. The module repo's release workflow opens a tracking issue here instead.",
+      "description": "MAJOR bumps of nf-mod-*/nf-sub-* submodules: no automatic propagation. The flag-major-updates workflow in the consuming repo's release workflow opens a tracking issue here instead.",
       "matchDepTypes": ["nf-module"],
       "matchUpdateTypes": ["major"],
       "enabled": false
