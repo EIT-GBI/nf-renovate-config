@@ -10,6 +10,8 @@
   "prConcurrentLimit": 0,
   "prHourlyLimit": 0,
 
+  "labels": ["dependencies", "bump:patch"],
+
   "git-submodules": {
     "enabled": false
   },
@@ -17,12 +19,12 @@
   "customManagers": [
     {
       "customType": "regex",
-      "description": "Track nf-mod-* and nf-sub-* versions declared in modules.versions. Each line: nf-mod-<name>=v<MAJOR>.<MINOR>.<PATCH> or nf-sub-<name>=... A subworkflow is pinned and propagated exactly like a module.",
+      "description": "Track nf-mod-* and nf-sub-* versions declared in modules.versions. Each line: nf-mod-<name>=v<MAJOR>.<MINOR>.<PATCH> or nf-sub-<name>=... A subworkflow is pinned and propagated exactly like a module. The pattern is anchored on the preceding newline, not on ^/$: Renovate does not match line by line, so `$` only ever matched the last line and every module above it went untracked. It also skips commented-out lines.",
       "managerFilePatterns": [
         "/(^|/)modules\\.versions$/"
       ],
       "matchStrings": [
-        "(?<packageName>nf-(?:mod|sub)-[a-zA-Z0-9._-]+)=(?<currentValue>v?\\d+\\.\\d+\\.\\d+)\\s*$"
+        "(?:^|\\n)(?<packageName>nf-(?:mod|sub)-[a-zA-Z0-9._-]+)=(?<currentValue>v?\\d+\\.\\d+\\.\\d+)"
       ],
       "datasourceTemplate": "github-releases",
       "depNameTemplate": "EIT-GBI/{{{packageName}}}",
@@ -34,6 +36,11 @@
   ],
 
   "packageRules": [
+    {
+      "description": "Every PR needs exactly one bump:* label (pr-label-check.yml), so everything Renovate opens defaults to bump:patch (top-level labels). Updates to the GitHub Actions in our workflows only change CI, not what the pipeline does: group them into one PR per update type, so each round costs a single patch release. They are never automerged, so majors still get a human review.",
+      "matchManagers": ["github-actions"],
+      "groupName": "GitHub Actions"
+    },
     {
       "description": "PATCH bumps of nf-mod-*/nf-sub-* submodules: no propagation. Disabled entirely.",
       "matchDepTypes": ["nf-module"],
@@ -53,7 +60,7 @@
       "labels": ["dependencies", "nf-module", "bump:minor"]
     },
     {
-      "description": "MAJOR bumps of nf-mod-*/nf-sub-* submodules: no automatic propagation. The flag-major-updates workflow in the consuming repo's release workflow opens a tracking issue here instead.",
+      "description": "MAJOR bumps of nf-mod-*/nf-sub-* submodules: no automatic propagation. The flag-major-updates workflow in the consuming repo opens a tracking issue instead.",
       "matchDepTypes": ["nf-module"],
       "matchUpdateTypes": ["major"],
       "enabled": false
