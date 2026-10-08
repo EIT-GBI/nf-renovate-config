@@ -12,6 +12,8 @@
 
   "labels": ["dependencies", "bump:patch"],
 
+  "gitIgnoredAuthors": ["github-actions[bot]@users.noreply.github.com"],
+
   "git-submodules": {
     "enabled": false
   },
